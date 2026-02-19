@@ -554,6 +554,8 @@
         ) {
           nextPrayerTimeMs = prayTimeMs;
           nextPrayerItem = { name: t.label, timeMs: prayTimeMs, key: t.key };
+          document.getElementById("title").innerText =
+            scheduleData[i].ramadhan + " - " + rowYear;
         }
 
         // jika bukan hari ini tetapi masih lebih besar dan lebih kecil dari nextPrayerTimeMs (misal besok) -> hitung mundur tetap muncul besok, tapi kita prioritaskan yang terdekat
