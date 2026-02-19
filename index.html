@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes"
+    />
+    <title>Jadwal Imsakiyah Ramadhan 1447 H | Medan</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="ramadan-container" id="ramadanApp">
+      <!-- header diambil dari data -->
+      <div class="header-islamic">
+        <h2>
+          <span class="medium">Jadwal Imsakiyah </span>
+          <br />
+          <span class="largeGreen">Ramadhan 1447 H (2026),</span>
+          <br />
+          <b>Kota Medan, Sumatera Utara, Indonesia</b>
+        </h2>
+        <div class="sub-coord">
+          Koordinat: (3.58, 98.67) • Zona Asia/Jakarta • Arah Kiblat 292°
+        </div>
+      </div>
+
+      <!-- area countdown realtime -->
+      <div class="live-countdown-panel" id="countdownPanel">
+        <div class="next-prayer">
+          <span class="next-label">⏳ Menuju</span>
+          <span class="next-name" id="nextPrayerName">Imsak</span>
+        </div>
+        <div class="countdown-timer" id="countdownDisplay">--:--:--</div>
+        <div class="info-date" id="infoDateNow">19 Feb 2026</div>
+      </div>
+
+      <!-- tabel jadwal akan diisi js -->
+      <div class="table-wrapper" id="tableWrapper">
+        <!-- injected by js -->
+      </div>
+
+      <!-- keterangan status -->
+      <div class="footer-note">
+        <div class="legend">
+          <span><i style="background: #2e7d32"></i> Lewat</span>
+          <span
+            ><i style="background: #f9a825; border: 1px solid white"></i>
+            Sekarang (sedang masuk)</span
+          >
+          <span
+            ><i style="background: #fff3cd; border: 1px solid #b68b40"></i> Akan
+            datang</span
+          >
+          <span
+            ><i style="background: #ffb74d"></i> Berikutnya (hit. mundur)</span
+          >
+        </div>
+        <div>🌙 Update realtime tiap detik</div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
