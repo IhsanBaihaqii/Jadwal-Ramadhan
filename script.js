@@ -450,6 +450,7 @@
 
     // cari index hari ini
     let todayIndex = -1;
+
     scheduleData.forEach((row, idx) => {
       const d = parseMasehi(row.masehi);
       if (
@@ -459,6 +460,12 @@
       )
         todayIndex = idx;
     });
+
+    if (todayIndex !== -1) {
+      const todayRamadhan = scheduleData[todayIndex].ramadhan;
+      document.getElementById("ramadhanBadge").innerText =
+        "🌙 " + todayRamadhan;
+    }
 
     // cari jadwal berikutnya (terdekat)
     let nextPrayer = null; // { name, timeMs }
