@@ -8,55 +8,64 @@
     />
     <title>Jadwal Imsakiyah Ramadhan 1447 H | Medan</title>
     <link rel="stylesheet" href="style.css" />
+    <!-- import font Inter dan DM Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=DM+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <div class="ramadan-container" id="ramadanApp">
-      <!-- header diambil dari data -->
-      <div class="header-islamic">
-        <h2>
-          <span class="medium">Jadwal Imsakiyah </span>
-          <br />
-          <span class="largeGreen" id="title">Ramadhan 1447 H (2026),</span>
-          <br />
-          <b>Kota Medan, Sumatera Utara, Indonesia</b>
-        </h2>
-        <div class="sub-coord">
-          Koordinat: (3.58, 98.67) • Zona Asia/Jakarta • Arah Kiblat 292°
+    <div class="ramadan-card" id="appModern">
+      <div class="header-compact">
+        <div class="ramadan-badge">🌙 Ramadan 1447 H</div>
+        <h1 class="title-glow">Jadwal Imsakiyah</h1>
+        <div class="subtitle-modern">
+          <span>Kota Medan</span>
+          <span>Sumatera Utara</span>
+          <span>Indonesia</span>
+        </div>
+        <div class="location-card">
+          <span>📍 3.58° LS, 98.67° BT</span>
+          <span>⏳ Asia/Jakarta</span>
+          <span>🕋 Kiblat 292°</span>
         </div>
       </div>
 
-      <!-- area countdown realtime -->
-      <div class="live-countdown-panel" id="countdownPanel">
-        <div class="next-prayer">
-          <span class="next-label">⏳ Menuju</span>
-          <span class="next-name" id="nextPrayerName">Imsak</span>
+      <!-- countdown realtime modern -->
+      <div class="countdown-glass" id="countdownModern">
+        <div class="next-prayer-modern">
+          <span class="next-label-pill">🕐 Berikutnya</span>
+          <span class="next-name-big" id="nextPrayerModern">Imsak</span>
         </div>
-        <div class="countdown-timer" id="countdownDisplay">--:--:--</div>
-        <div class="info-date" id="infoDateNow">19 Feb 2026</div>
+        <div class="countdown-digital" id="countdownDisplayModern">
+          --:--:--
+        </div>
+        <div class="date-chip" id="dateChipModern">19 Feb 2026</div>
       </div>
 
-      <!-- tabel jadwal akan diisi js -->
-      <div class="table-wrapper" id="tableWrapper">
-        <!-- injected by js -->
-      </div>
+      <!-- tabel container -->
+      <div class="table-wrapper-modern" id="modernTableWrapper"></div>
 
-      <!-- keterangan status -->
-      <div class="footer-note">
-        <div class="legend">
-          <span><i style="background: #2e7d32"></i> Lewat</span>
-          <span
-            ><i style="background: #f9a825; border: 1px solid white"></i>
-            Sekarang (sedang masuk)</span
+      <!-- footer modern -->
+      <div class="legend-modern">
+        <div class="legend-items">
+          <span class="legend-dot"><i class="dot past-dot"></i> Lewat</span>
+          <span class="legend-dot"
+            ><i class="dot current-dot"></i> Sedang berlangsung</span
           >
-          <span
-            ><i style="background: #fff3cd; border: 1px solid #b68b40"></i> Akan
-            datang</span
+          <span class="legend-dot"
+            ><i class="dot upcoming-dot"></i> Akan datang</span
           >
-          <span
-            ><i style="background: #ffb74d"></i> Berikutnya (hit. mundur)</span
+          <span class="legend-dot"
+            ><i class="dot next-dot"></i> Berikutnya (countdown)</span
           >
         </div>
-        <div>🌙 Update realtime tiap detik</div>
+        <div class="footer-note-modern">
+          <span>⏱️ update realtime</span>
+          <span>✨ 30 hari berkah</span>
+        </div>
       </div>
     </div>
 

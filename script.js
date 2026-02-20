@@ -1,5 +1,4 @@
 (function () {
-  // ==================== DATA JADWAL (dari tabel HTML) =====================
   const scheduleData = [
     {
       ramadhan: "1 Ramadan 1447",
@@ -393,7 +392,6 @@
     },
   ];
 
-  // daftar waktu shalat (kolom) sesuai urutan tampilan
   const timeCols = [
     { key: "imsak", label: "Imsak" },
     { key: "subuh", label: "Subuh" },
@@ -405,9 +403,8 @@
     { key: "isya", label: "Isya" },
   ];
 
-  // ========== HELPER TANGGAL ==========
-  function parseDateMasehi(dateStr) {
-    // dateStr: "19 Feb 2026"
+  // helper parse tanggal "19 Feb 2026"
+  function parseMasehi(dateStr) {
     const months = {
       Jan: 0,
       Feb: 1,
@@ -424,192 +421,135 @@
     };
     const parts = dateStr.split(" ");
     if (parts.length !== 3) return new Date();
-    const day = parseInt(parts[0], 10);
-    let monthStr = parts[1];
-    // handling singkatan indonesia
-    if (monthStr === "Feb") monthStr = "Feb";
-    if (monthStr === "Mar") monthStr = "Mar";
-    if (monthStr === "Apr") monthStr = "Apr";
-    if (monthStr === "Mei") monthStr = "May";
-    if (monthStr === "Jun") monthStr = "Jun";
-    if (monthStr === "Jul") monthStr = "Jul";
-    if (monthStr === "Agu") monthStr = "Aug";
-    if (monthStr === "Sep") monthStr = "Sep";
-    if (monthStr === "Okt") monthStr = "Oct";
-    if (monthStr === "Nov") monthStr = "Nov";
-    if (monthStr === "Des") monthStr = "Dec";
-    const year = parseInt(parts[2], 10);
-    return new Date(`${day} ${monthStr} ${year} GMT+0700`); // asumsi WIB
+    let month = parts[1];
+    if (month === "Feb") month = "Feb";
+    else if (month === "Mar") month = "Mar";
+    else if (month === "Apr") month = "Apr";
+    else if (month === "Mei") month = "May";
+    else if (month === "Jun") month = "Jun";
+    else if (month === "Jul") month = "Jul";
+    else if (month === "Agu") month = "Aug";
+    else if (month === "Sep") month = "Sep";
+    else if (month === "Okt") month = "Oct";
+    else if (month === "Nov") month = "Nov";
+    else if (month === "Des") month = "Dec";
+    return new Date(`${parts[0]} ${month} ${parts[2]} GMT+0700`);
   }
 
-  function addLeadingZero(num) {
-    return num < 10 ? "0" + num : num;
+  function pad(n) {
+    return n < 10 ? "0" + n : n;
   }
 
-  // mendapatkan today tanpa waktu (00:00 WIB)
-  function getTodayDate() {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return new Date(d.getTime() + 7 * 60 * 60 * 1000); // sesuaikan ke WIB
-  }
-
-  // render tabel + update status
-  function renderTableAndCountdown() {
+  // render tabel dan countdown
+  function refreshUI() {
     const now = new Date();
     const currentTime = now.getTime();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const dayDate = now.getDate();
+    const year = now.getFullYear(),
+      month = now.getMonth(),
+      day = now.getDate();
 
-    // hitung index jadwal hari ini berdasarkan masehi
-    let todayRowIndex = -1;
-    const todayDateStr = `${addLeadingZero(dayDate)} ${now.toLocaleString("id", { month: "short" })} ${year}`;
-    // tapi kita cocokkan dengan data.masehi
-
-    // untuk setiap baris, tentukan apakah hari ini
+    // cari index hari ini
+    let todayIndex = -1;
     scheduleData.forEach((row, idx) => {
-      const rowDate = parseDateMasehi(row.masehi);
+      const d = parseMasehi(row.masehi);
       if (
-        rowDate.getDate() === dayDate &&
-        rowDate.getMonth() === month &&
-        rowDate.getFullYear() === year
-      ) {
-        todayRowIndex = idx;
-      }
+        d.getDate() === day &&
+        d.getMonth() === month &&
+        d.getFullYear() === year
+      )
+        todayIndex = idx;
     });
 
-    // bangun tabel
-    let html = `
-                <table align="center" style="overflow-x:auto; text-align:center; margin:5px auto;">
-                    <thead>
-                        <tr>
-                            <th>Ramadan</th><th>Hari</th><th>Masehi</th><th>Imsak</th><th>Subuh</th><th>Terbit</th><th>Dhuha</th><th>Zuhur</th><th>'Ashr</th><th>Maghrib</th><th>'Isya'</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                `;
+    // cari jadwal berikutnya (terdekat)
+    let nextPrayer = null; // { name, timeMs }
+    let nextTime = Infinity;
 
-    // cari jadwal berikutnya (untuk countdown)
-    let nextPrayerItem = null; // obj {timeInMs, name, typeKey}
-    let nextPrayerTimeMs = Infinity;
+    // bangun tabel
+    let html =
+      "<table><thead><tr><th>Ramadan</th><th>Hari</th><th>Masehi</th><th>Imsak</th><th>Subuh</th><th>Terbit</th><th>Dhuha</th><th>Zuhur</th><th>Ashr</th><th>Maghrib</th><th>Isya</th></tr></thead><tbody>";
 
     for (let i = 0; i < scheduleData.length; i++) {
       const row = scheduleData[i];
-      const rowDate = parseDateMasehi(row.masehi);
-      rowDate.setHours(0, 0, 0, 0);
-      const rowYear = rowDate.getFullYear();
-      const rowMonth = rowDate.getMonth();
-      const rowDay = rowDate.getDate();
+      const rowDate = parseMasehi(row.masehi);
+      const rowYear = rowDate.getFullYear(),
+        rowMonth = rowDate.getMonth(),
+        rowDay = rowDate.getDate();
+      const isToday = rowYear === year && rowMonth === month && rowDay === day;
+      const rowClass = isToday ? "today-highlight" : "";
 
-      const isToday =
-        rowYear === year && rowMonth === month && rowDay === dayDate;
+      html += `<tr class="${rowClass}"><th class="rowhead">${row.ramadhan}</th><td>${row.hari}</td><td>${row.masehi}</td>`;
 
-      let rowClass = isToday ? "today-row" : "";
-
-      html += `<tr class="${rowClass}">`;
-      html += `<th class="rowhead">${row.ramadhan}</th><td>${row.hari}</td><td>${row.masehi}</td>`;
-
-      // loop timeCols
       for (let t of timeCols) {
-        let timeStr = row[t.key];
-        // buat date object waktu spesifik (set jam menit)
+        const timeStr = row[t.key];
         const [hour, minute] = timeStr.split(":").map(Number);
-        const prayDateTime = new Date(
-          rowYear,
-          rowMonth,
-          rowDay,
-          hour,
-          minute,
-          0,
-          0,
-        );
-        const prayTimeMs = prayDateTime.getTime();
+        const prayDate = new Date(rowYear, rowMonth, rowDay, hour, minute, 0);
+        const prayMs = prayDate.getTime();
 
-        let additionalClass = "";
-        // bandingkan dengan now
-        if (prayTimeMs < currentTime) {
-          additionalClass = "past-time"; // lewat
-        } else if (
-          prayTimeMs >= currentTime &&
-          prayTimeMs < currentTime + 60 * 60 * 1000
-        ) {
-          // dalam satu jam ke depan (anggap current)
-          // kita anggap "sedang waktu ini" jika current di antara start dan (start+30 menit) sederhananya
-          // untuk contoh, kita kasih current jika selisih kurang dari 30 menit kedepan
-          if (
-            prayTimeMs <= currentTime &&
-            currentTime < prayTimeMs + 30 * 60 * 1000
-          )
-            additionalClass = "current-time";
-          else additionalClass = "upcoming-time";
-        } else if (prayTimeMs > currentTime) {
-          additionalClass = "upcoming-time";
+        let cellClass = "";
+        if (prayMs < currentTime) cellClass = "past-time";
+        else if (prayMs >= currentTime && prayMs < currentTime + 30 * 60 * 1000)
+          cellClass = "current-time"; // dalam 30 menit dianggap current
+        else if (prayMs > currentTime) cellClass = "upcoming-time";
+
+        // tentukan berikutnya: hanya yang > currentTime dan terdekat
+        if (prayMs > currentTime && prayMs < nextTime) {
+          nextTime = prayMs;
+          nextPrayer = { name: t.label, timeMs: prayMs };
         }
 
-        // khusus baris hari ini, kita tandai juga yg mendekat
+        // jika waktu ini adalah yang terpilih sebagai berikutnya, beri highlight ekstra
         if (
-          isToday &&
-          prayTimeMs > currentTime &&
-          prayTimeMs < nextPrayerTimeMs
+          nextPrayer &&
+          nextPrayer.timeMs === prayMs &&
+          prayMs > currentTime
         ) {
-          nextPrayerTimeMs = prayTimeMs;
-          nextPrayerItem = { name: t.label, timeMs: prayTimeMs, key: t.key };
-          document.getElementById("title").innerText =
-            scheduleData[i].ramadhan + " - " + rowYear;
+          cellClass = cellClass + " next-highlight"; // timpa dengan highlight oranye
         }
 
-        // jika bukan hari ini tetapi masih lebih besar dan lebih kecil dari nextPrayerTimeMs (misal besok) -> hitung mundur tetap muncul besok, tapi kita prioritaskan yang terdekat
-        if (prayTimeMs > currentTime && prayTimeMs < nextPrayerTimeMs) {
-          nextPrayerTimeMs = prayTimeMs;
-          nextPrayerItem = { name: t.label, timeMs: prayTimeMs, key: t.key };
-        }
-
-        html += `<td class="${additionalClass}">${timeStr}</td>`;
+        html += `<td class="${cellClass}">${timeStr}</td>`;
       }
-      html += `</tr>`;
+      html += "</tr>";
     }
+    html += "</tbody></table>";
+    document.getElementById("modernTableWrapper").innerHTML = html;
 
-    html += `</tbody></table>`;
-    document.getElementById("tableWrapper").innerHTML = html;
-
-    // update countdown & next prayer
-    if (nextPrayerItem) {
-      document.getElementById("nextPrayerName").innerText = nextPrayerItem.name;
-      // hitung mundur
-      function updateCountdown() {
+    // update countdown panel
+    if (nextPrayer) {
+      document.getElementById("nextPrayerModern").innerText = nextPrayer.name;
+      // hitung mundur realtime
+      function updateCdown() {
         const nowMs = new Date().getTime();
-        const diff = nextPrayerItem.timeMs - nowMs;
+        const diff = nextPrayer.timeMs - nowMs;
         if (diff <= 0) {
-          // waktu sudah lewat, refresh page logic
-          renderTableAndCountdown(); // re-render
+          refreshUI(); // re-render jika sudah lewat
           return;
         }
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        document.getElementById("countdownDisplay").innerText =
-          `${addLeadingZero(hours)}:${addLeadingZero(minutes)}:${addLeadingZero(seconds)}`;
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        document.getElementById("countdownDisplayModern").innerText =
+          `${pad(h)}:${pad(m)}:${pad(s)}`;
       }
-      // clear interval sebelumnya jika ada
-      if (window._countdownInterval) clearInterval(window._countdownInterval);
-      updateCountdown();
-      window._countdownInterval = setInterval(updateCountdown, 1000);
+      if (window._intv) clearInterval(window._intv);
+      updateCdown();
+      window._intv = setInterval(updateCdown, 1000);
     } else {
-      document.getElementById("nextPrayerName").innerText = "-";
-      document.getElementById("countdownDisplay").innerText = "--:--:--";
+      document.getElementById("nextPrayerModern").innerText = "—";
+      document.getElementById("countdownDisplayModern").innerText = "--:--:--";
     }
 
-    // info tanggal
-    const today = new Date();
-    document.getElementById("infoDateNow").innerText = today.toLocaleDateString(
+    // tanggal hari ini
+    const d = new Date();
+    document.getElementById("dateChipModern").innerText = d.toLocaleDateString(
       "id-ID",
-      { day: "numeric", month: "short", year: "numeric" },
+      {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      },
     );
   }
 
-  // init
-  renderTableAndCountdown();
-  setInterval(() => {
-    renderTableAndCountdown();
-  }, 1000); // refresh tiap detik untuk update status warna dan countdown
+  refreshUI();
+  setInterval(refreshUI, 1000);
 })();
