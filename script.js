@@ -403,7 +403,7 @@
     { key: "isya", label: "Isya" },
   ];
 
-  // helper parse tanggal "19 Feb 2026"
+  // helper parse tanggal "19 Februari 2026"
   function parseMasehi(dateStr) {
     const months = {
       Jan: 0,
