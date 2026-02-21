@@ -22,7 +22,6 @@ body {
   position: relative;
 }
 
-/* ornamen geometris modern */
 body::before {
   content: "";
   position: absolute;
